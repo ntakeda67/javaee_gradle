@@ -7,7 +7,7 @@ targetCompatibility = '1.7'
 def defaultEncoding = 'UTF-8'
 tasks.withType(Compile) { options.encoding = defaultEncoding }
 
-ext.jbossHome = hasProperty('jbossHome') ? jbossHome : "/Users/ntakeda/appServers/jboss-eap-6.2" 
+ext.jbossHome = hasProperty('jbossHome') ? jbossHome : "/opt/jboss" 
 
 repositories {
     mavenCentral()

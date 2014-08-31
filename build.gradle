@@ -4,8 +4,8 @@ apply plugin: 'war'
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
-compileJava.options.encoding = 'UTF-8'
-compileTestJava.options.encoding = 'UTF-8'
+def defaultEncoding = 'UTF-8'
+tasks.withType(AbstractCompile) each { it.options.encoding = defaultEncoding }
 
 ext.jbossHome = hasProperty('jbossHome') ? jbossHome : "/Users/ntakeda/appServers/jboss-eap-6.2" 
 

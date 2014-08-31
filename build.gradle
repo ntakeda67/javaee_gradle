@@ -7,6 +7,8 @@ targetCompatibility = '1.7'
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
+ext.jbossHome = hasProperty('jbossHome') ? jbossHome : "/Users/ntakeda/appServers/jboss-eap-6.2" 
+
 repositories {
     mavenCentral()
     maven { url 'http://public-maven.classmethod.info/release' }
@@ -16,10 +18,10 @@ repositories {
 configurations {
     compileOnly
     jmockit
-    arqCompile
-    arqRuntime
-    jbossManagedRuntime { extendsFrom arqRuntime }
-    jbossRemoteRuntime  { extendsFrom arqRuntime }
+    arqCompile { extendsFrom testCompile } 
+    arqRuntime { extendsFrom testRuntime } 
+    jbossManaged { extendsFrom arqRuntime }
+    jbossRemote  { extendsFrom arqRuntime }
 }
 
 dependencies {
@@ -33,18 +35,19 @@ dependencies {
     jmockit 'org.jmockit:jmockit:1.9'
     testCompile 'junit:junit:4.11'
     testCompile 'org.hamcrest:hamcrest-core:1.3'
-    testCompile 'org.hamcrest:hamrest-library:1.3'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
     testCompile 'jp.classmethod.testing:cmtest-db:0.4'
     testCompile 'org.yaml:snakeyaml:1.13'
     testCompile 'org.dbunit:dbunit:2.5.0'
     testCompile 'commons-io:commons-io:2.1'
 
+    arqCompile 'org.jboss.arquillian.junit:arquillian-junit-container:1.1.5.Final'
     arqCompile 'org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-api-javaee:2.0.0-alpha-5'
+    arqCompile 'org.jboss.spec:jboss-javaee-6.0:1.0.0.Final'
     arqRuntime 'org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-impl-javaee:2.0.0-alpha-5'
-    arqRuntime 'org.jboss.spec:jboss-javaee-6.0:1.0.0.Final'
 
-    jbossManagedRuntime 'org.jboss-as-arquillian-container-managed:7.2.0.Final'
-    jbossRemoteRuntime  'org.jboss-as-arquillian-container-remote:7.2.0.Final'
+    jbossManaged 'org.jboss.as:jboss-as-arquillian-container-managed:7.2.0.Final'
+    jbossRemote  'org.jboss.as:jboss-as-arquillian-container-remote:7.2.0.Final'
 }
 
 sourceSets {
@@ -54,8 +57,8 @@ sourceSets {
 	runtimeClasspath = configurations.jmockit + runtimeClasspath
     }
     integTest {
-        compileClasspath = configurations.arqCompile + compileClasspath
-	runtimeClasspath = configurations.arqRuntime + runtimeClasspath
+        compileClasspath = configurations.jbossManaged + configurations.arqCompile + main.output + compileClasspath
+	runtimeClasspath = configurations.jbossManaged + main.output + runtimeClasspath
     }
 }
 
@@ -77,8 +80,10 @@ test {
 }
 
 task jbossManagedTest(type: Test, dependsOn: integTestClasses) {
+    environment 'JBOSS_HOME', rootProject.jbossHome
+    
     testClassesDir = sourceSets.integTest.output.classesDir
-    classpath = classpath + configurations.arqRuntime + configurations.jbossManagedRuntime
+    classpath = classpath + configurations.arqCompile + configurations.jbossManaged + sourceSets.integTest.output
 
     reports.html.destination = file('build/reports/integration_test/report')
     reports.junitXml.destination = file('build/reports/integration_test/result')

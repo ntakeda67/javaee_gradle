@@ -45,8 +45,10 @@ public class EventResourceTest {
     }
     
     @Test
-    public void getResource() throws UnirestException{
+    public void EventをGETメソッドで取得すると_HTTPレスポンスコード200_レスポンスボディに_Event_文字列が返却される() throws UnirestException{
         HttpResponse<String> response = Unirest.get(customerRequestUrl).asString();
+        
+        assertThat(response.getCode(), is(200));
         assertThat(response.getBody(), is("Event"));
     }
     

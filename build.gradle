@@ -5,9 +5,7 @@ sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
 def defaultEncoding = 'UTF-8'
-compileIntegTestJava.options.encoding = defaultEncoding
-tasks.withType(AbstractCompile) each { it.options.encoding = defaultEncoding }
-tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = defaultEncoding }
+tasks.withType(Compile) { options.encoding = defaultEncoding }
 
 ext.jbossHome = hasProperty('jbossHome') ? jbossHome : "/Users/ntakeda/appServers/jboss-eap-6.2" 
 

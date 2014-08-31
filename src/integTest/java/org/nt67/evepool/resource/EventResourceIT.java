@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
  * @author ntakeda
  */
 @RunWith(Arquillian.class)
-public class EventResourceTest {
+public class EventResourceIT {
     
     @Deployment(testable = false )
     public static WebArchive createDeployment() {
